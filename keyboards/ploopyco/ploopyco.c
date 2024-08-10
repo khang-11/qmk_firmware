@@ -36,8 +36,7 @@
 #endif
 
 #ifndef PLOOPY_DPI_OPTIONS
-#    define PLOOPY_DPI_OPTIONS \
-        { 600, 900, 1200, 1600, 2400 }
+#    define PLOOPY_DPI_OPTIONS {600, 900, 1200, 1600, 2400}
 #    ifndef PLOOPY_DPI_DEFAULT
 #        define PLOOPY_DPI_DEFAULT 1
 #    endif
@@ -179,14 +178,12 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
         pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
     }
 
-    if (keycode == DRAG_SCROLL) {
-#ifdef PLOOPY_DRAGSCROLL_MOMENTARY
-        is_drag_scroll = record->event.pressed;
-#else
-        if (record->event.pressed) {
+    if (record->event.pressed) {
+        if (keycode == DRAG_SCROLL) {
             is_drag_scroll ^= 1;
+        } else {
+            is_drag_scroll = false;
         }
-#endif
     }
 
     return true;
