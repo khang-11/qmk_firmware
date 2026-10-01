@@ -25,21 +25,23 @@
 #define NO_ACTION_MACRO
 #define NO_ACTION_FUNCTION
 
-/* DPI and drag-scroll speed are deliberately not set here, so this keymap
- * inherits exactly what the Adept inherits from keyboards/ploopyco/ploopyco.c:
+/* DPI ladder, stepped at runtime with the DPI_CONFIG keycode - assign "DPI
+ * Config" to any button in VIA. Each press advances one entry and wraps.
  *
- *   PLOOPY_DPI_OPTIONS           {900}   -> 900 CPI
- *   PLOOPY_DPI_DEFAULT           0
- *   PLOOPY_DRAGSCROLL_DIVISOR_H  64.0
- *   PLOOPY_DRAGSCROLL_DIVISOR_V  64.0
+ * DPI_CONFIG writes the chosen index to EEPROM, so the value you settle on
+ * survives reboots and firmware flashes. No reflashing needed to change DPI.
  *
- * That is 900 / 64.0 = about 14 scroll ticks per inch of ball travel, the same
- * rate the Adept runs at. Set the defines here to diverge from it.
+ * Index 0 is 1200 on purpose: this tree only rejects a stored index *greater*
+ * than the array size, and the index was last left at 0, so index 0 is what
+ * boots. Each press from there steps forward.
  *
- * PLOOPY_DRAGSCROLL_INVERT is absent on purpose. The keymap this was adapted
- * from set it, so leaving it out reverses the drag-scroll direction.
- *
- * If you ever set PLOOPY_DPI_OPTIONS here, make sure PLOOPY_DPI_DEFAULT is 0.
- * This tree only rejects a stored index greater than the array size, so a
- * single-entry array with default 1 reads one element past dpi_array[] and
- * leaves the sensor on a garbage CPI. */
+ * Values must be multiples of 100 (PMW33XX_CPI_STEP) or they get truncated
+ * down to one. */
+#define PLOOPY_DPI_OPTIONS { 1200, 1400, 1600, 1800, 2000, 2400 }
+#define PLOOPY_DPI_DEFAULT 0
+
+/* Drag-scroll speed is inherited from ploopyco.c as 64.0, the same divisor the
+ * Adept uses. Note the rate scales with CPI, since ticks per inch is
+ * CPI / divisor: at 1200 CPI this gives ~19 ticks per inch, against ~14 on the
+ * Adept at 900. Set PLOOPY_DRAGSCROLL_DIVISOR_H/V to 85.0 below to hold the
+ * Adept's rate at 1200 CPI. */

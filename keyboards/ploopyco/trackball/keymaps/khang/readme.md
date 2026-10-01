@@ -28,24 +28,38 @@ Two changes from the original:
 
 ## Configuration
 
-This keymap sets no DPI or drag-scroll defines, so it inherits these from
-`keyboards/ploopyco/ploopyco.c` - the same values the Adept runs:
-
 | define | value | effect |
 |---|---|---|
-| `PLOOPY_DPI_OPTIONS` | `{900}` | sensor runs at 900 CPI |
-| `PLOOPY_DPI_DEFAULT` | `0` | |
-| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` | 900 / 64 = ~14 scroll ticks per inch of ball travel |
+| `PLOOPY_DPI_OPTIONS` | `{ 1200, 1400, 1600, 1800, 2000, 2400 }` | DPI ladder, cycled at runtime |
+| `PLOOPY_DPI_DEFAULT` | `0` | boots on index 0 = 1200 CPI |
+| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` (inherited) | 1200 / 64 = ~19 scroll ticks per inch |
 | `DYNAMIC_KEYMAP_LAYER_COUNT` | `8` | VIA layers |
 
-`PLOOPY_DRAGSCROLL_INVERT` is deliberately not set, which reverses the
-vertical drag-scroll direction relative to the original keymap. Note this tree
-only implements the vertical inversion - `PLOOPY_DRAGSCROLL_H_INVERT` is
-documented in the readme but not handled by the code, so the horizontal
-component always follows the ball.
+## Finding your DPI without reflashing
 
-Lower the divisor for faster drag scrolling, raise it for slower. `8.0` (the
-upstream default before this fork's tuning) is about 8x faster than `64.0`.
+`DPI_CONFIG` steps through `PLOOPY_DPI_OPTIONS` and writes the chosen index to
+EEPROM, so the value survives reboots and reflashes.
+
+1. Assign **DPI Config** to a button in <https://usevia.app>. The wheel click
+   (`[0,1]`) is free in this keymap.
+2. Press it to step forward through the ladder. It wraps at the end.
+3. Settle on whatever feels right and stop - nothing else to do. The choice is
+   already saved.
+
+Boots on 1200 CPI (index 0). Each press moves one step, so the value is:
+
+| presses | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|
+| CPI | 1200 | 1400 | 1600 | 1800 | 2000 | 2400 |
+
+Once you know the number, it can be pinned to a single value so `DPI_CONFIG`
+stops doing anything - or just leave the ladder in place.
+
+Note that drag-scroll speed scales with CPI, because ticks per inch is
+`CPI / divisor`. At 1200 CPI with the inherited `64.0` that's ~19 ticks per
+inch, against ~14 for the Adept at 900. Set the divisor to `85.0` to hold the
+Adept's rate at 1200 CPI; `8.0` (the upstream default) is roughly 8x faster
+again.
 
 ## Build
 
