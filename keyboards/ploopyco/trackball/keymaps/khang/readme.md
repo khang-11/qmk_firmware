@@ -30,15 +30,34 @@ Two changes from the original:
 
 | define | value | effect |
 |---|---|---|
-| `PLOOPY_DPI_OPTIONS` | `{ 1100, 1200, 1300, 1400, 1500 }` | DPI ladder, cycled at runtime |
-| `PLOOPY_DPI_DEFAULT` | `0` | boots on index 0 = 1100 CPI |
-| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` (inherited) | 1100-1500 / 64 = ~17-23 ticks per inch |
+| `PLOOPY_DPI_OPTIONS` | `{ 1400 }` | pinned at 1400 CPI; `DPI_CONFIG` is inert |
+| `PLOOPY_DPI_DEFAULT` | `0` | |
+| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` (inherited) | 1400 / 64 = ~22 ticks per inch |
 | `DYNAMIC_KEYMAP_LAYER_COUNT` | `8` | VIA layers |
+
+## Adjusting the DPI
+
+It is pinned at 1400, so `DPI_CONFIG` does nothing. 1400 was chosen from a
+runtime ladder of:
+
+```c
+#define PLOOPY_DPI_OPTIONS { 1100, 1200, 1300, 1400, 1500 }
+```
+
+Put that line back in `config.h` to cycle through it again with **DPI Config**
+assigned in <https://usevia.app> - `DPI_CONFIG` saves the index to EEPROM, so
+you can tune without reflashing.
+
+Granularity is 100 CPI, the PMW3360's resolution register step
+(`PMW33XX_CPI_STEP`). There is no 50 step: `pmw33xx_set_cpi()` divides the
+requested value by 100, so 1150 writes the same register value as 1100 and
+reads back as 1100.
 
 ## Finding your DPI without reflashing
 
 `DPI_CONFIG` steps through `PLOOPY_DPI_OPTIONS` and writes the chosen index to
-EEPROM, so the value survives reboots and reflashes.
+EEPROM, so the value survives reboots and reflashes. This only applies while
+`PLOOPY_DPI_OPTIONS` has more than one entry.
 
 1. Assign **DPI Config** to a button in <https://usevia.app>. The wheel click
    (`[0,1]`) is free in this keymap.
@@ -58,7 +77,7 @@ requested CPI by 100, so 1150 writes the same register value as 1100 and reads
 back as 1100. Asking for 50 increments would produce duplicate entries.
 
 Once you know the number, it can be pinned to a single value so `DPI_CONFIG`
-stops doing anything - or just leave the ladder in place.
+stops doing anything - which is what this keymap now does with 1400.
 
 Note that drag-scroll speed scales with CPI, because ticks per inch is
 `CPI / divisor`. At 1200 CPI with the inherited `64.0` that's ~19 ticks per
