@@ -31,13 +31,15 @@
  * DPI_CONFIG writes the chosen index to EEPROM, so the value you settle on
  * survives reboots and firmware flashes. No reflashing needed to change DPI.
  *
- * The sensor's CPI step is 100 (PMW33XX_CPI_STEP), so between 900 exclusive and
- * 1200 inclusive there are only three values available: 1000, 1100 and 1200.
+ * Increments of 50 are not possible. The PMW3360 steps in units of 100 CPI
+ * (PMW33XX_CPI_STEP) and pmw33xx_set_cpi() does `cpi / PMW33XX_CPI_STEP`, so
+ * 1150 writes the same register value as 1100 and reads back as 1100. A 50
+ * ladder would just contain duplicate values. 100 CPI is the finest available.
  *
- * Index 0 is 1000 on purpose: this tree only rejects a stored index *greater*
+ * Index 0 is 1100 on purpose: this tree only rejects a stored index *greater*
  * than the array size, and the index was last left at 0, so index 0 is what
  * boots. Each press from there steps forward. */
-#define PLOOPY_DPI_OPTIONS { 1000, 1100, 1200 }
+#define PLOOPY_DPI_OPTIONS { 1100, 1200, 1300, 1400, 1500 }
 #define PLOOPY_DPI_DEFAULT 0
 
 /* Drag-scroll speed is inherited from ploopyco.c as 64.0, the same divisor the

@@ -30,9 +30,9 @@ Two changes from the original:
 
 | define | value | effect |
 |---|---|---|
-| `PLOOPY_DPI_OPTIONS` | `{ 1000, 1100, 1200 }` | DPI ladder, cycled at runtime |
-| `PLOOPY_DPI_DEFAULT` | `0` | boots on index 0 = 1000 CPI |
-| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` (inherited) | 1000-1200 / 64 = ~16-19 ticks per inch |
+| `PLOOPY_DPI_OPTIONS` | `{ 1100, 1200, 1300, 1400, 1500 }` | DPI ladder, cycled at runtime |
+| `PLOOPY_DPI_DEFAULT` | `0` | boots on index 0 = 1100 CPI |
+| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` (inherited) | 1100-1500 / 64 = ~17-23 ticks per inch |
 | `DYNAMIC_KEYMAP_LAYER_COUNT` | `8` | VIA layers |
 
 ## Finding your DPI without reflashing
@@ -46,14 +46,16 @@ EEPROM, so the value survives reboots and reflashes.
 3. Settle on whatever feels right and stop - nothing else to do. The choice is
    already saved.
 
-Boots on 1000 CPI (index 0). Each press moves one step, so the value is:
+Boots on 1100 CPI (index 0). Each press moves one step, so the value is:
 
-| presses | 0 | 1 | 2 |
-|---|---|---|---|
-| CPI | **1000** | 1100 | 1200 |
+| presses | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| CPI | **1100** | 1200 | 1300 | 1400 | 1500 |
 
-The sensor's CPI step is 100, so between 900 (exclusive) and 1200 (inclusive)
-these three are the only values available - there is no finer granularity.
+The granularity is 100 CPI, which is the PMW3360's resolution register step
+(`PMW33XX_CPI_STEP`). There is no 50 step: `pmw33xx_set_cpi()` divides the
+requested CPI by 100, so 1150 writes the same register value as 1100 and reads
+back as 1100. Asking for 50 increments would produce duplicate entries.
 
 Once you know the number, it can be pinned to a single value so `DPI_CONFIG`
 stops doing anything - or just leave the ladder in place.
