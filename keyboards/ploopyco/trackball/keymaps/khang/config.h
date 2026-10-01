@@ -25,13 +25,21 @@
 #define NO_ACTION_MACRO
 #define NO_ACTION_FUNCTION
 
-/* One DPI option, so the default index has to be 0. The original had
- * PLOOPY_DPI_DEFAULT 1 against a single-element array, which reads one element
- * past the end of dpi_array[] - on this board that lands on the keyboard_report
- * pointer and leaves the sensor on a garbage CPI. */
-#define PLOOPY_DPI_OPTIONS { 1200 }
-#define PLOOPY_DPI_DEFAULT 0
-
-#define PLOOPY_DRAGSCROLL_INVERT
-#define PLOOPY_DRAGSCROLL_DIVISOR_H 120.0
-#define PLOOPY_DRAGSCROLL_DIVISOR_V 120.0
+/* DPI and drag-scroll speed are deliberately not set here, so this keymap
+ * inherits exactly what the Adept inherits from keyboards/ploopyco/ploopyco.c:
+ *
+ *   PLOOPY_DPI_OPTIONS           {900}   -> 900 CPI
+ *   PLOOPY_DPI_DEFAULT           0
+ *   PLOOPY_DRAGSCROLL_DIVISOR_H  64.0
+ *   PLOOPY_DRAGSCROLL_DIVISOR_V  64.0
+ *
+ * That is 900 / 64.0 = about 14 scroll ticks per inch of ball travel, the same
+ * rate the Adept runs at. Set the defines here to diverge from it.
+ *
+ * PLOOPY_DRAGSCROLL_INVERT is absent on purpose. The keymap this was adapted
+ * from set it, so leaving it out reverses the drag-scroll direction.
+ *
+ * If you ever set PLOOPY_DPI_OPTIONS here, make sure PLOOPY_DPI_DEFAULT is 0.
+ * This tree only rejects a stored index greater than the array size, so a
+ * single-entry array with default 1 reads one element past dpi_array[] and
+ * leaves the sensor on a garbage CPI. */

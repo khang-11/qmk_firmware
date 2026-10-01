@@ -18,26 +18,34 @@ in <https://usevia.app>.
 
 Two changes from the original:
 
-- `PLOOPY_DPI_DEFAULT` is `0`, not `1`. With a single-element
-  `PLOOPY_DPI_OPTIONS`, index 1 reads past the end of `dpi_array[]` and the
-  sensor ends up on a garbage CPI.
+- `PLOOPY_DPI_DEFAULT` is no longer relied on: the DPI and drag-scroll defines
+  are dropped entirely so the keymap inherits the shared defaults the Adept
+  uses. The original had `PLOOPY_DPI_DEFAULT 1` against a single-element
+  `PLOOPY_DPI_OPTIONS`, which reads past the end of `dpi_array[]` and leaves the
+  sensor on a garbage CPI.
 - `LTO_ENABLE = yes` instead of `EXTRAFLAGS += -flto`, which is the supported
   way to get the same thing.
 
 ## Configuration
 
-In `config.h`:
+This keymap sets no DPI or drag-scroll defines, so it inherits these from
+`keyboards/ploopyco/ploopyco.c` - the same values the Adept runs:
 
 | define | value | effect |
 |---|---|---|
-| `PLOOPY_DPI_OPTIONS` | `{ 1200 }` | sensor runs at 1200 CPI |
-| `PLOOPY_DRAGSCROLL_INVERT` | - | reverses the drag-scroll direction |
-| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `120.0` | scroll ticks per 120 counts, ~10 ticks per inch at 1200 CPI |
+| `PLOOPY_DPI_OPTIONS` | `{900}` | sensor runs at 900 CPI |
+| `PLOOPY_DPI_DEFAULT` | `0` | |
+| `PLOOPY_DRAGSCROLL_DIVISOR_H/V` | `64.0` | 900 / 64 = ~14 scroll ticks per inch of ball travel |
 | `DYNAMIC_KEYMAP_LAYER_COUNT` | `8` | VIA layers |
 
-Lower the divisor for faster drag scrolling, raise it for slower. 120 counts per
-tick is roughly stock Ploopy feel; 8.0 (the upstream default) is about 15x
-faster.
+`PLOOPY_DRAGSCROLL_INVERT` is deliberately not set, which reverses the
+vertical drag-scroll direction relative to the original keymap. Note this tree
+only implements the vertical inversion - `PLOOPY_DRAGSCROLL_H_INVERT` is
+documented in the readme but not handled by the code, so the horizontal
+component always follows the ball.
+
+Lower the divisor for faster drag scrolling, raise it for slower. `8.0` (the
+upstream default before this fork's tuning) is about 8x faster than `64.0`.
 
 ## Build
 
